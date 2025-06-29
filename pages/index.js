@@ -23,7 +23,6 @@ export default function Home() {
         setLoading(false);
       }
     };
-    
     fetchWeather();
   }, [location]);
 
@@ -58,12 +57,12 @@ export default function Home() {
 
   if (!weather) return null;
 
-  const currentCondition = weather.current.weather[0].main.toLowerCase();
+  // Use the new structure for /weather endpoint
+  const currentCondition = weather.weather?.[0]?.main?.toLowerCase() || "clear";
 
   return (
     <div className="min-h-screen p-4 relative">
       <PixelBackground condition={currentCondition} />
-      
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.h1 
           className="pixel-title"
@@ -101,135 +100,34 @@ export default function Home() {
         >
           <PixelWeatherCard 
             title="Temperature" 
-            value={`${Math.round(weather.current.temp)}°C`} 
+            value={`${Math.round(weather.main.temp)}°C`} 
             icon="🌡️"
-            description={weather.current.weather[0].description}
+            description={weather.weather?.[0]?.description || "No description"}
           />
           <PixelWeatherCard 
             title="Feels Like" 
-            value={`${Math.round(weather.current.feels_like)}°C`} 
+            value={`${Math.round(weather.main.feels_like)}°C`} 
             icon="🌡️"
             description="Real feel temperature"
           />
           <PixelWeatherCard 
             title="Humidity" 
-            value={`${weather.current.humidity}%`} 
+            value={`${weather.main.humidity}%`} 
             icon="💧"
             description="Moisture in air"
           />
           <PixelWeatherCard 
             title="Wind Speed" 
-            value={`${Math.round(weather.current.wind_speed * 3.6)} KM/H`} 
+            value={`${Math.round(weather.wind.speed * 3.6)} KM/H`} 
             icon="💨"
             description="Current wind speed"
           />
           <PixelWeatherCard 
-            title="UV Index" 
-            value={`${Math.round(weather.current.uvi)}/11`} 
-            icon="☀️"
-            description="UV radiation level"
-          />
-          <PixelWeatherCard 
             title="Pressure" 
-            value={`${weather.current.pressure} hPa`} 
+            value={`${weather.main.pressure} hPa`} 
             icon="🌪️"
             description="Atmospheric pressure"
           />
-        </motion.div>
-        
-        <motion.div 
-          className="pixel-container p-6 mb-8"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
-        >
-          <h2 className="text-xl mb-6 text-center text-cyan-300 tracking-wider">
-            🗓️ 7-DAY FORECAST
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-7 gap-4">
-            {weather.daily.slice(0, 7).map((day, index) => {
-              const date = new Date(day.dt * 1000);
-              const isToday = index === 0;
-              
-              return (
-                <motion.div 
-                  key={index} 
-                  className="forecast-card"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 + index * 0.1 }}
-                >
-                  <p className="text-xs mb-2 text-cyan-300 font-bold">
-                    {isToday ? 'TODAY' : date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()}
-                  </p>
-                  <div className="text-2xl my-3">
-                    {day.weather[0].main === 'Rain' ? '🌧️' : 
-                     day.weather[0].main === 'Snow' ? '❄️' :
-                     day.weather[0].main === 'Clear' ? '☀️' : 
-                     day.weather[0].main === 'Clouds' ? '☁️' : '🌤️'}
-                  </div>
-                  <p className="text-sm font-bold text-white">
-                    {Math.round(day.temp.max)}°C
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {Math.round(day.temp.min)}°C
-                  </p>
-                  <p className="text-xs mt-2 text-gray-300">
-                    {day.weather[0].description.split(' ').map(word => 
-                      word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' ')}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        <motion.div 
-          className="pixel-container p-6"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
-        >
-          <h2 className="text-xl mb-6 text-center text-cyan-300 tracking-wider">
-            ⏰ HOURLY FORECAST
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-            {weather.hourly.slice(0, 6).map((hour, index) => {
-              const time = new Date(hour.dt * 1000);
-              const isNow = index === 0;
-              
-              return (
-                <motion.div 
-                  key={index} 
-                  className="forecast-card"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 + index * 0.1 }}
-                >
-                  <p className="text-xs mb-2 text-cyan-300 font-bold">
-                    {isNow ? 'NOW' : time.toLocaleTimeString('en-US', { 
-                      hour: '2-digit', 
-                      minute: '2-digit', 
-                      hour12: false 
-                    })}
-                  </p>
-                  <div className="text-xl my-2">
-                    {hour.weather[0].main === 'Rain' ? '🌧️' : 
-                     hour.weather[0].main === 'Snow' ? '❄️' :
-                     hour.weather[0].main === 'Clear' ? '☀️' : 
-                     hour.weather[0].main === 'Clouds' ? '☁️' : '🌤️'}
-                  </div>
-                  <p className="text-sm font-bold text-white">
-                    {Math.round(hour.temp)}°C
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {hour.pop > 0 ? `${Math.round(hour.pop * 100)}% 🌧️` : 'No Rain'}
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
         </motion.div>
       </div>
     </div>
