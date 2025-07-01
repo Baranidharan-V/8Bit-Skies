@@ -63,6 +63,23 @@ export default function Home() {
   return (
     <div className="min-h-screen p-4 relative">
       <PixelBackground condition={currentCondition} />
+      
+      {/* Cyberpunk Status Indicator - Replaces Hearts */}
+      <motion.div 
+        className="pixel-status"
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 1, duration: 0.8 }}
+      >
+        <div className="status-indicator">
+          <span className="pixel-icon">⚡</span>
+          <div className="status-text">
+            <div className="status-line">LIVE</div>
+            <div className="status-dots">●●●</div>
+          </div>
+        </div>
+      </motion.div>
+
       <div className="max-w-7xl mx-auto relative z-10">
         <motion.h1 
           className="pixel-title"
@@ -70,7 +87,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          PIXEL WEATHER
+          PixelCast
         </motion.h1>
         
         <motion.div
@@ -92,43 +109,62 @@ export default function Home() {
         
         <PixelLocationSearch onLocationChange={handleLocationChange} />
         
-        <motion.div 
-          className="pixel-grid mb-8"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-        >
-          <PixelWeatherCard 
-            title="Temperature" 
-            value={`${Math.round(weather.main.temp)}°C`} 
-            icon="🌡️"
-            description={weather.weather?.[0]?.description || "No description"}
-          />
-          <PixelWeatherCard 
-            title="Feels Like" 
-            value={`${Math.round(weather.main.feels_like)}°C`} 
-            icon="🌡️"
-            description="Real feel temperature"
-          />
-          <PixelWeatherCard 
-            title="Humidity" 
-            value={`${weather.main.humidity}%`} 
-            icon="💧"
-            description="Moisture in air"
-          />
-          <PixelWeatherCard 
-            title="Wind Speed" 
-            value={`${Math.round(weather.wind.speed * 3.6)} KM/H`} 
-            icon="💨"
-            description="Current wind speed"
-          />
-          <PixelWeatherCard 
-            title="Pressure" 
-            value={`${weather.main.pressure} hPa`} 
-            icon="🌪️"
-            description="Atmospheric pressure"
-          />
-        </motion.div>
+<motion.div 
+  className="pixel-grid mb-8"
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.5, duration: 0.6 }}
+>
+  <PixelWeatherCard 
+    title="Temperature" 
+    value={`${Math.round(weather.main.temp)}°C`} 
+    icon="🌡️"
+    description={weather.weather?.[0]?.description || "No description"}
+  />
+  <PixelWeatherCard 
+    title="Feels Like" 
+    value={`${Math.round(weather.main.feels_like)}°C`} 
+    icon="🔥"
+    description="Real feel temperature"
+  />
+  <PixelWeatherCard 
+    title="Humidity" 
+    value={`${weather.main.humidity}%`} 
+    icon="💧"
+    description="Moisture in air"
+  />
+  <PixelWeatherCard 
+    title="Wind Speed" 
+    value={`${Math.round(weather.wind.speed * 3.6)} KM/H`} 
+    icon="💨"
+    description="Current wind speed"
+  />
+  <PixelWeatherCard 
+    title="Pressure" 
+    value={`${weather.main.pressure} hPa`} 
+    icon="🌀"
+    description="Atmospheric pressure"
+  />
+  <PixelWeatherCard 
+    title="Visibility" 
+    value={`${weather.visibility ? (weather.visibility / 1000).toFixed(1) : 'N/A'} KM`} 
+    icon="👁️"
+    description="Visibility distance"
+  />
+  <PixelWeatherCard 
+    title="Sunrise" 
+    value={weather.sys.sunrise ? new Date(weather.sys.sunrise * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'} 
+    icon="🌅"
+    description="Sunrise time"
+  />
+  <PixelWeatherCard 
+    title="Sunset" 
+    value={weather.sys.sunset ? new Date(weather.sys.sunset * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'} 
+    icon="🌇"
+    description="Sunset time"
+  />
+</motion.div>
+
       </div>
     </div>
   );
